@@ -4,6 +4,7 @@ import { FiSearch, FiUser, FiCheckCircle, FiDollarSign, FiCreditCard, FiActivity
 import { doctorService } from '../../services/doctor.service';
 import { useCurrency } from '../../context/CurrencyContext';
 import PatientProfileModal from '../../components/PatientProfileModal';
+import { WhatsAppButton } from '../../components/WhatsAppButton';
 import './Dashboard.css';
 import './Patients.css';
 
@@ -161,9 +162,12 @@ const DoctorPatients = () => {
                                         <p className="patient-meta">
                                             ID: P-{patient.id} • {(patient.age !== undefined && patient.age !== null) ? patient.age : 'N/A'} Y • {patient.gender || 'N/A'}
                                         </p>
-                                        <div className="patient-contact">
+                                        <div className="patient-contact" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                                             <span>{patient.email || 'No email registered'}</span>
-                                            <span>{patient.phone || patient.contact || 'No phone record'}</span>
+                                            <span>• {patient.phone || patient.contact || 'No phone record'}</span>
+                                            {(patient.phone || patient.contact) && (
+                                                <WhatsAppButton phone={patient.phone || patient.contact} variant="icon" size={12} />
+                                            )}
                                         </div>
                                         <div style={{ display: 'flex', gap: '8px', marginTop: '8px', flexWrap: 'wrap' }}>
                                             {patient.medicalrecord && patient.medicalrecord.length > 0 && (
@@ -187,6 +191,9 @@ const DoctorPatients = () => {
                                         >
                                             Start Consultation
                                         </button>
+                                        {(patient.phone || patient.contact) && (
+                                            <WhatsAppButton phone={patient.phone || patient.contact} label="Contact through WhatsApp" variant="button" size={13} style={{ height: '32px', fontSize: '0.8rem' }} />
+                                        )}
                                         <button
                                             className="btn btn-primary btn-sm"
                                             style={{

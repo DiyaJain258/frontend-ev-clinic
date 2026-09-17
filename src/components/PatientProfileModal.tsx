@@ -7,6 +7,7 @@ import { useCurrency } from '../context/CurrencyContext';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { addClinicHeader } from '../utils/pdfUtils';
+import { WhatsAppButton } from './WhatsAppButton';
 import './PatientProfileModal.css';
 
 interface PatientProfileModalProps {
@@ -208,6 +209,11 @@ const PatientProfileModal: React.FC<PatientProfileModalProps> = ({ isOpen, onClo
                         </div>
                         <h2>{displayName}</h2>
                         <p>Patient ID: P-{patientId}</p>
+                        {profile?.patient?.phone && (
+                            <div style={{ marginTop: '8px' }}>
+                                <WhatsAppButton phone={profile.patient.phone} label="Contact via WhatsApp" variant="button" size={14} />
+                            </div>
+                        )}
                     </div>
 
                     <nav className="profile-nav">
@@ -736,7 +742,12 @@ const PatientProfileModal: React.FC<PatientProfileModalProps> = ({ isOpen, onClo
                                         </div>
                                         <div className="info-item">
                                             <label><FiPhone /> Contact</label>
-                                            <p>{profile.patient.phone || 'N/A'}</p>
+                                            <p style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                                                <span>{profile.patient.phone || 'N/A'}</span>
+                                                {profile.patient.phone && (
+                                                    <WhatsAppButton phone={profile.patient.phone} label="Contact through WhatsApp" variant="button" size={14} />
+                                                )}
+                                            </p>
                                         </div>
                                         <div className="info-item">
                                             <label><FiCalendar /> Age / Gender</label>

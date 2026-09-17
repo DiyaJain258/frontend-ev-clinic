@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { patientService } from '../../services/patient.service';
 import { useToast } from '../../context/ToastContext';
 import { FiCalendar, FiUser, FiCheckCircle, FiActivity, FiMapPin } from 'react-icons/fi';
+import { WhatsAppButton } from '../../components/WhatsAppButton';
 import './PatientBooking.css';
 
 const ClinicPublicBooking = () => {
@@ -302,8 +303,11 @@ const ClinicPublicBooking = () => {
                 </form>
             </div>
 
-            <div className="public-footer text-center mt-40 pb-40">
-                <p className="text-secondary">© 2026 {clinic.name || 'Exclusive Vision'}. Powered by Exclusive Vision.</p>
+            <div className="public-footer text-center mt-40 pb-40" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' }}>
+                {(formData.phone || clinic?.phone) && (
+                    <WhatsAppButton phone={formData.phone || clinic?.phone} label="Contact via WhatsApp" variant="button" />
+                )}
+                <p className="text-secondary">© 2026 {clinic?.name || 'Exclusive Vision'}. Powered by Exclusive Vision.</p>
             </div>
         </div>
     );

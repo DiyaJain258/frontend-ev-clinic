@@ -1,7 +1,10 @@
 import { FiPhone, FiMail, FiInfo } from 'react-icons/fi';
+import { useAuth } from '../../context/AuthContext';
+import { WhatsAppButton } from '../../components/WhatsAppButton';
 import './HelpSupport.css';
 
 const HelpSupport = () => {
+    const { user, selectedClinic } = useAuth() as any;
     return (
         <div className="patient-help-support-page">
             <div className="patient-help-header">
@@ -51,6 +54,9 @@ const HelpSupport = () => {
                             <div className="patient-help-contact-item">
                                 <FiMail className="patient-help-contact-icon" />
                                 <span>Email: support@evclinic.com</span>
+                            </div>
+                            <div className="patient-help-contact-item" style={{ marginTop: '0.75rem' }}>
+                                <WhatsAppButton phone={user?.phone || selectedClinic?.phone || '971501234567'} label="Chat on WhatsApp" variant="button" size={14} />
                             </div>
                         </div>
                     </div>

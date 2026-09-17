@@ -10,6 +10,7 @@ import './Patients.css';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { addClinicHeader } from '../../utils/pdfUtils';
+import { WhatsAppButton } from '../../components/WhatsAppButton';
 
 const PatientManagement = () => {
     const { patients, staff, addPatient, addBooking, logAction } = useApp() as any;
@@ -346,9 +347,14 @@ const PatientManagement = () => {
                         <div className="card-divider"></div>
                         <div className="patient-contact-details">
                             <div className="contact-row">
-                                <div className="contact-info-block">
-                                    <FiMail size={16} />
-                                    <span>{patient.email || 'No email provided'}</span>
+                                <div className="contact-info-block" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                        <FiMail size={16} />
+                                        <span>{patient.email || 'No email provided'}</span>
+                                    </div>
+                                    {patient.phone && (
+                                        <WhatsAppButton phone={patient.phone} variant="icon" size={14} />
+                                    )}
                                 </div>
                             </div>
                             <div className="contact-row">

@@ -173,14 +173,21 @@ const Staff = () => {
         setIsModalOpen(true);
     };
 
+    let currentModules: any = { pharmacy: true, radiology: true, laboratory: true, billing: true };
+    if (currentClinic?.modules) {
+        try {
+            currentModules = typeof currentClinic.modules === 'string' ? JSON.parse(currentClinic.modules) : currentClinic.modules;
+        } catch (e) { }
+    }
+
     const tabs = [
         { id: 'all', label: 'All Staff', count: allClinicStaff.length },
         { id: 'DOCTOR', label: 'Doctors', count: allClinicStaff.filter(s => (s.roles || []).includes('DOCTOR')).length },
         { id: 'RECEPTIONIST', label: 'Receptionist', count: allClinicStaff.filter(s => (s.roles || []).includes('RECEPTIONIST')).length },
         { id: 'ACCOUNTANT', label: 'Accountants', count: allClinicStaff.filter(s => (s.roles || []).includes('ACCOUNTANT')).length },
-        { id: 'LAB', label: 'Lab', count: allClinicStaff.filter(s => (s.roles || []).includes('LAB')).length },
-        { id: 'PHARMACY', label: 'Pharmacy', count: allClinicStaff.filter(s => (s.roles || []).includes('PHARMACY')).length },
-        { id: 'RADIOLOGY', label: 'Radiology', count: allClinicStaff.filter(s => (s.roles || []).includes('RADIOLOGY')).length },
+        ...(currentModules.laboratory !== false && currentModules.lab !== false ? [{ id: 'LAB', label: 'Lab', count: allClinicStaff.filter(s => (s.roles || []).includes('LAB')).length }] : []),
+        ...(currentModules.pharmacy !== false ? [{ id: 'PHARMACY', label: 'Pharmacy', count: allClinicStaff.filter(s => (s.roles || []).includes('PHARMACY')).length }] : []),
+        ...(currentModules.radiology !== false ? [{ id: 'RADIOLOGY', label: 'Radiology', count: allClinicStaff.filter(s => (s.roles || []).includes('RADIOLOGY')).length }] : []),
         { id: 'DOCUMENT_CONTROLLER', label: 'Documents', count: allClinicStaff.filter(s => (s.roles || []).includes('DOCUMENT_CONTROLLER')).length },
     ];
 
@@ -378,29 +385,37 @@ const Staff = () => {
                         <div className="form-group">
                             <label>Roles * (Select one or more)</label>
                             <div className="roles-checkbox-grid">
-                                {[
-                                    { id: 'DOCTOR', label: 'Doctor' },
-                                    { id: 'RECEPTIONIST', label: 'Receptionist' },
-                                    { id: 'PHARMACY', label: 'Pharmacy' },
-                                    { id: 'LAB', label: 'Laboratory' },
-                                    { id: 'RADIOLOGY', label: 'Radiology' },
-                                    { id: 'DOCUMENT_CONTROLLER', label: 'Doc Controller' },
-                                    { id: 'ACCOUNTANT', label: 'Accountant' },
-                                ].map(role => (
-                                    <label key={role.id} className="role-check-item">
-                                        <input
-                                            type="checkbox"
-                                            checked={staffForm.roles.includes(role.id)}
-                                            onChange={(e) => {
-                                                const newRoles = e.target.checked
-                                                    ? [...staffForm.roles, role.id]
-                                                    : staffForm.roles.filter(r => r !== role.id);
-                                                setStaffForm({ ...staffForm, roles: newRoles });
-                                            }}
-                                        />
-                                        <span>{role.label}</span>
-                                    </label>
-                                ))}
+                                {(() => {
+                                    let currentModules: any = { pharmacy: true, radiology: true, laboratory: true, billing: true };
+                                    if (currentClinic?.modules) {
+                                        try {
+                                            currentModules = typeof currentClinic.modules === 'string' ? JSON.parse(currentClinic.modules) : currentClinic.modules;
+                                        } catch (e) { }
+                                    }
+                                    return [
+                                        { id: 'DOCTOR', label: 'Doctor', enabled: true },
+                                        { id: 'RECEPTIONIST', label: 'Receptionist', enabled: true },
+                                        { id: 'PHARMACY', label: 'Pharmacy', enabled: currentModules.pharmacy !== false },
+                                        { id: 'LAB', label: 'Laboratory', enabled: currentModules.laboratory !== false && currentModules.lab !== false },
+                                        { id: 'RADIOLOGY', label: 'Radiology', enabled: currentModules.radiology !== false },
+                                        { id: 'DOCUMENT_CONTROLLER', label: 'Doc Controller', enabled: true },
+                                        { id: 'ACCOUNTANT', label: 'Accountant', enabled: true },
+                                    ].filter(r => r.enabled).map(role => (
+                                        <label key={role.id} className="role-check-item">
+                                            <input
+                                                type="checkbox"
+                                                checked={staffForm.roles.includes(role.id)}
+                                                onChange={(e) => {
+                                                    const newRoles = e.target.checked
+                                                        ? [...staffForm.roles, role.id]
+                                                        : staffForm.roles.filter(r => r !== role.id);
+                                                    setStaffForm({ ...staffForm, roles: newRoles });
+                                                }}
+                                            />
+                                            <span>{role.label}</span>
+                                        </label>
+                                    ));
+                                })()}
                             </div>
                         </div>
                         {(staffForm.roles.includes('DOCTOR')) && (

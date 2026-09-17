@@ -5,6 +5,7 @@ import { FiSearch, FiPrinter, FiEye, FiActivity, FiTrash2, FiDownload, FiClipboa
 import Modal from '../../components/Modal';
 import { jsPDF } from 'jspdf';
 import { addClinicHeader } from '../../utils/pdfUtils';
+import { WhatsAppButton } from '../../components/WhatsAppButton';
 import { API_URL } from '../../config/config';
 import '../SharedDashboard.css';
 
@@ -48,7 +49,7 @@ const PatientRecords = () => {
 
     useEffect(() => {
         if (user) fetchRecords();
-    }, [user]);
+    }, [user, selectedClinic]);
 
     const allRecords = [
         ...(records.assessments || []).map((a: any) => ({
@@ -686,7 +687,12 @@ const PatientRecords = () => {
                                 <div style={{ fontSize: '14px' }}><strong>Name:</strong> {user?.name || 'N/A'}</div>
                                 <div style={{ fontSize: '14px' }}><strong>Patient ID:</strong> #{user?.id || 'N/A'}</div>
                                 <div style={{ fontSize: '14px' }}><strong>Date:</strong> {new Date(selectedRecord.date).toLocaleDateString()}</div>
-                                <div style={{ fontSize: '14px' }}><strong>Phone:</strong> {user?.phone || 'N/A'}</div>
+                                <div style={{ fontSize: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <span><strong>Phone:</strong> {user?.phone || 'N/A'}</span>
+                                    {user?.phone && (
+                                        <WhatsAppButton phone={user.phone} variant="icon" size={12} />
+                                    )}
+                                </div>
                                 <div style={{ fontSize: '14px' }}><strong>Age / Gender:</strong> {user?.age || 'N/A'} Yrs / {user?.gender || 'N/A'}</div>
                             </div>
                         </div>

@@ -9,7 +9,7 @@ import { API_URL } from '../../config/config';
 import '../SharedDashboard.css';
 
 const Documents = () => {
-    const { user } = useAuth() as any;
+    const { user, selectedClinic } = useAuth() as any;
     const [documents, setDocuments] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -87,7 +87,7 @@ const Documents = () => {
         };
 
         if (user) fetchDocuments();
-    }, [user]);
+    }, [user, selectedClinic]);
 
     const generatePDF = async (doc: any, shouldDownload = true) => {
         // If the document has original content (URL or Base64), use it immediately without modification

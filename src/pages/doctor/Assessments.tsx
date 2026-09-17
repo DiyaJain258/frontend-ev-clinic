@@ -12,6 +12,7 @@ import { clinicService } from '../../services/clinic.service';
 
 import Modal from '../../components/Modal';
 import PatientProfileModal from '../../components/PatientProfileModal';
+import { WhatsAppButton } from '../../components/WhatsAppButton';
 import { FiFolder } from 'react-icons/fi';
 import { API_URL } from '../../config/config';
 import './Dashboard.css';
@@ -562,6 +563,13 @@ const Assessments = () => {
                             </div>
 
                             <div className="assessment-actions">
+                                {(assessment.patient?.phone || (patients || []).find((p: any) => p.id === (assessment.patient?.id || assessment.patientId))?.phone) && (
+                                    <WhatsAppButton
+                                        phone={assessment.patient?.phone || (patients || []).find((p: any) => p.id === (assessment.patient?.id || assessment.patientId))?.phone}
+                                        variant="icon"
+                                        size={14}
+                                    />
+                                )}
                                 <button
                                     className="action-btn-icon"
                                     title="View Patient File"
@@ -619,18 +627,25 @@ const Assessments = () => {
                                 </optgroup>
                             </select>
                             {selectedPatientId && (
-                                <button
-                                    type="button"
-                                    className="btn btn-secondary"
-                                    style={{ height: '42px', width: '42px', padding: 0, minWidth: '42px' }}
-                                    onClick={() => {
-                                        const p = patients.find((p: any) => p.id === Number(selectedPatientId));
-                                        if (p) openProfile(p.id, p.name);
-                                    }}
-                                    title="View Patient File"
-                                >
-                                    <FiFolder />
-                                </button>
+                                <>
+                                    <button
+                                        type="button"
+                                        className="btn btn-secondary"
+                                        style={{ height: '42px', width: '42px', padding: 0, minWidth: '42px' }}
+                                        onClick={() => {
+                                            const p = patients.find((p: any) => p.id === Number(selectedPatientId));
+                                            if (p) openProfile(p.id, p.name);
+                                        }}
+                                        title="View Patient File"
+                                    >
+                                        <FiFolder />
+                                    </button>
+                                    <WhatsAppButton
+                                        phone={patients.find((p: any) => p.id === Number(selectedPatientId))?.phone}
+                                        variant="icon"
+                                        size={16}
+                                    />
+                                </>
                             )}
                         </div>
                         {selectedPatientId && !isSelectedPatientValid && (
@@ -678,7 +693,81 @@ const Assessments = () => {
 
 
                             <div className="standard-clinical-fields mb-xl">
-                                <h4 className="section-title-clinical">Clinical Diagnosis</h4>
+                                <h4 className="section-title-clinical">Patient Vitals</h4>
+                                <div className="form-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))', gap: '0.75rem', marginBottom: '1.25rem' }}>
+                                    <div className="form-group">
+                                        <label style={{ fontSize: '0.75rem' }}>BP (mmHg)</label>
+                                        <input
+                                            type="text"
+                                            placeholder="120/80"
+                                            value={formData['vitals_bp'] || ''}
+                                            onChange={e => setFormData({ ...formData, 'vitals_bp': e.target.value })}
+                                            className="compact-input"
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label style={{ fontSize: '0.75rem' }}>Pulse (bpm)</label>
+                                        <input
+                                            type="text"
+                                            placeholder="72"
+                                            value={formData['vitals_pulse'] || ''}
+                                            onChange={e => setFormData({ ...formData, 'vitals_pulse': e.target.value })}
+                                            className="compact-input"
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label style={{ fontSize: '0.75rem' }}>Temp (°F)</label>
+                                        <input
+                                            type="text"
+                                            placeholder="98.6"
+                                            value={formData['vitals_temp'] || ''}
+                                            onChange={e => setFormData({ ...formData, 'vitals_temp': e.target.value })}
+                                            className="compact-input"
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label style={{ fontSize: '0.75rem' }}>Resp Rate</label>
+                                        <input
+                                            type="text"
+                                            placeholder="16"
+                                            value={formData['vitals_resp'] || ''}
+                                            onChange={e => setFormData({ ...formData, 'vitals_resp': e.target.value })}
+                                            className="compact-input"
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label style={{ fontSize: '0.75rem' }}>SpO2 (%)</label>
+                                        <input
+                                            type="text"
+                                            placeholder="98%"
+                                            value={formData['vitals_spo2'] || ''}
+                                            onChange={e => setFormData({ ...formData, 'vitals_spo2': e.target.value })}
+                                            className="compact-input"
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label style={{ fontSize: '0.75rem' }}>Weight (kg)</label>
+                                        <input
+                                            type="text"
+                                            placeholder="70"
+                                            value={formData['vitals_weight'] || ''}
+                                            onChange={e => setFormData({ ...formData, 'vitals_weight': e.target.value })}
+                                            className="compact-input"
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label style={{ fontSize: '0.75rem' }}>Height (cm)</label>
+                                        <input
+                                            type="text"
+                                            placeholder="170"
+                                            value={formData['vitals_height'] || ''}
+                                            onChange={e => setFormData({ ...formData, 'vitals_height': e.target.value })}
+                                            className="compact-input"
+                                        />
+                                    </div>
+                                </div>
+
+                                <h4 className="section-title-clinical">Clinical Diagnosis & Treatment</h4>
                                 <div className="form-group">
                                     <label>Diagnosis / Impression <span className="text-danger">*</span></label>
                                     <textarea
@@ -692,7 +781,19 @@ const Assessments = () => {
                                     />
                                 </div>
 
-                                <div className="form-row">
+                                <div className="form-group" style={{ marginTop: '1rem' }}>
+                                    <label>Treatment / Procedures Given</label>
+                                    <textarea
+                                        rows={2}
+                                        placeholder="Enter treatment plan, procedures performed, or immediate medication given..."
+                                        value={formData['treatment'] || ''}
+                                        onChange={e => setFormData({ ...formData, 'treatment': e.target.value })}
+                                        className="compact-input"
+                                        style={{ height: 'auto', minHeight: '60px' }}
+                                    />
+                                </div>
+
+                                <div className="form-row" style={{ marginTop: '1rem' }}>
                                     <div className="form-group" style={{ flex: 1 }}>
                                         <label>Follow-up Date</label>
                                         <input

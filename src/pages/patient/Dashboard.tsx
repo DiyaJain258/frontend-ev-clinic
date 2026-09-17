@@ -4,6 +4,7 @@ import { patientService } from '../../services/patient.service';
 import { useCurrency } from '../../context/CurrencyContext';
 import { FiCalendar, FiActivity, FiDollarSign, FiSettings, FiClock, FiCheckCircle, FiFileText, FiFile } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
+import { WhatsAppButton } from '../../components/WhatsAppButton';
 import '../SharedDashboard.css';
 
 const PatientDashboard = () => {
@@ -65,7 +66,7 @@ const PatientDashboard = () => {
         if (user) {
             fetchData();
         }
-    }, [user]);
+    }, [user, selectedClinic]);
 
     if (loading) {
         return <div className="p-20 text-center">Loading dashboard...</div>;
@@ -85,7 +86,10 @@ const PatientDashboard = () => {
                         <p style={{ color: '#64748b', fontSize: '0.95rem', marginTop: '0.25rem' }}>{selectedClinic?.name ? `You are connected with ${selectedClinic.name}` : 'Manage your health journey with ease.'}</p>
                     </div>
                 </div>
-                <div className="header-actions">
+                <div className="header-actions" style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                    {user?.phone && (
+                        <WhatsAppButton phone={user.phone} label="WhatsApp Contact" variant="button" style={{ height: '44px', padding: '0 1rem' }} />
+                    )}
                     <button
                         onClick={() => navigate('/patient/book')}
                         className="btn btn-primary"

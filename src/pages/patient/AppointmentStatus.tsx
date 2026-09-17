@@ -6,7 +6,7 @@ import { useToast } from '../../context/ToastContext';
 import './PatientBooking.css';
 
 const AppointmentStatus = () => {
-    const { user } = useAuth() as any;
+    const { user, selectedClinic } = useAuth() as any;
     const [bookings, setBookings] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -30,7 +30,7 @@ const AppointmentStatus = () => {
         if (user) {
             fetchBookings();
         }
-    }, [user]);
+    }, [user, selectedClinic]);
 
     const handleCancel = async (id: number) => {
         if (!window.confirm('Are you sure you want to cancel this appointment?')) return;

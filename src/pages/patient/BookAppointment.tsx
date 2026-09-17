@@ -77,16 +77,25 @@ const BookAppointment = () => {
         }
     }, [user, step]);
 
-    // Fetch time slots when doctor and date are selected
+    // Fetch available time slots when date or clinic changes (excluding confirmed/locked slots)
     useEffect(() => {
-        const fetchTimeSlots = async () => {
-            if (formData.doctorId && formData.date && selectedClinicId && bookingDetails) {
-                // Time slots are already in bookingDetails, but we can refresh if needed
-                // For now, time slots are static from booking config
+        const fetchAvailableSlots = async () => {
+            if (selectedClinicId && formData.date) {
+                try {
+                    const res = await patientService.getClinicBookingDetails(selectedClinicId, formData.date);
+                    if (res.data) {
+                        setBookingDetails((prev: any) => ({
+                            ...(prev || {}),
+                            timeSlots: res.data.timeSlots || []
+                        }));
+                    }
+                } catch (err) {
+                    console.error('Failed to fetch available time slots:', err);
+                }
             }
         };
-        fetchTimeSlots();
-    }, [formData.doctorId, formData.date, selectedClinicId, bookingDetails]);
+        fetchAvailableSlots();
+    }, [formData.date, selectedClinicId]);
 
     const handleClinicChange = async (clinicId: number) => {
         if (!clinicId) {

@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { FiSearch, FiCalendar, FiClock, FiCheck, FiX, FiCheckCircle } from 'react-icons/fi';
 import { useApp } from '../../context/AppContext';
 import { useAuth } from '../../context/AuthContext';
+import { WhatsAppButton } from '../../components/WhatsAppButton';
 import './Dashboard.css';
 
 const Bookings = () => {
@@ -127,9 +128,12 @@ const Bookings = () => {
                                     <tr key={booking.id}>
                                         <td>
                                             <div style={{ fontWeight: '600' }}>{patient.name || 'Unknown'}</div>
-                                            <div className="info-subtext" style={{ fontSize: '0.8rem' }}>
-                                                {patient.phone || 'No phone'}
-                                                {patient.email ? ` • ${patient.email}` : ''}
+                                            <div className="info-subtext" style={{ fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                                                <span>{patient.phone || 'No phone'}</span>
+                                                {patient.phone && (
+                                                    <WhatsAppButton phone={patient.phone} variant="icon" size={11} />
+                                                )}
+                                                {patient.email ? <span>• {patient.email}</span> : null}
                                             </div>
                                         </td>
                                         <td>{provider.name || 'Unassigned'}</td>

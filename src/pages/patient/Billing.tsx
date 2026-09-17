@@ -6,7 +6,7 @@ import { FiDollarSign, FiInfo } from 'react-icons/fi';
 import '../SharedDashboard.css';
 
 const PatientBilling = () => {
-    const { user } = useAuth() as any;
+    const { user, selectedClinic } = useAuth() as any;
     const { formatMoney } = useCurrency();
     const [invoices, setInvoices] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -28,7 +28,7 @@ const PatientBilling = () => {
         if (user) {
             fetchInvoices();
         }
-    }, [user]);
+    }, [user, selectedClinic]);
 
     if (loading) {
         return <div className="p-20 text-center">Loading billing information...</div>;

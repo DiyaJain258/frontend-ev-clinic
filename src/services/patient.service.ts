@@ -11,7 +11,7 @@ export const patientService = {
     publicBookAppointment: (data: any) => api.post('/patient/public-book', data),
     bookAppointment: (data: any) => api.post('/patient/book', data),
     getClinicDoctors: (clinicId: number) => api.get(`/patient/doctors/${clinicId}`),
-    getClinicBookingDetails: (clinicId: number) => api.get(`/patient/booking-details/${clinicId}`),
+    getClinicBookingDetails: (clinicId: number, date?: string) => api.get(`/patient/booking-details/${clinicId}${date ? `?date=${encodeURIComponent(date)}` : ''}`),
 
     // New Public Booking System
     getPublicClinic: (subdomain: string) => api.get(`/public/clinic/${subdomain}`),

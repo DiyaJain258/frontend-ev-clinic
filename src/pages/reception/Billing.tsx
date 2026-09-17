@@ -43,10 +43,16 @@ const Billing = () => {
     const [payMethod, setPayMethod] = useState('Cash');
     const [isSubmittingPayment, setIsSubmittingPayment] = useState(false);
 
-    const fetchInvoices = async () => {
+    const [filterDate, setFilterDate] = useState('');
+    const [filterPatientName, setFilterPatientName] = useState('');
+
+    const fetchInvoices = async (dateVal = filterDate, patientVal = filterPatientName) => {
         try {
             setLoadingInvoices(true);
-            const res: any = await billingService.getInvoices();
+            const params: any = {};
+            if (dateVal) params.date = dateVal;
+            if (patientVal) params.patientName = patientVal;
+            const res: any = await billingService.getInvoices(params);
             setInvoices(res.data || res || []);
         } catch (error) {
             console.error(error);
@@ -108,6 +114,19 @@ const Billing = () => {
                 return [...prev, item];
             }
         });
+    };
+
+    const handleMarkOutside = async (item: any) => {
+        try {
+            await billingService.markItemOutside(item.id, item.type);
+            toast.success(`Marked "${item.description}" as Outside`);
+            setSelectedItems(prev => prev.filter(i => !(i.id === item.id && i.type === item.type)));
+            if (selectedPatientId) {
+                fetchPendingItems(Number(selectedPatientId));
+            }
+        } catch (err: any) {
+            toast.error(err?.response?.data?.message || err?.message || 'Failed to mark item as Outside');
+        }
     };
 
     const totalAmount = selectedItems.reduce((sum, item) => sum + Number(item.amount), 0);
@@ -356,9 +375,47 @@ const Billing = () => {
             </div>
 
             <div className="section-card card mt-lg">
-                <div className="card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h3>Recent Invoices</h3>
-                    <button className="btn btn-secondary btn-sm" onClick={fetchInvoices}>Refresh</button>
+                <div className="card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+                    <h3>Billing & Invoices</h3>
+                    <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                        <input
+                            type="date"
+                            className="form-control"
+                            style={{ width: '160px', padding: '0.4rem 0.6rem', fontSize: '0.85rem' }}
+                            value={filterDate}
+                            onChange={(e) => {
+                                const val = e.target.value;
+                                setFilterDate(val);
+                                fetchInvoices(val, filterPatientName);
+                            }}
+                            title="Filter by Date"
+                        />
+                        <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Search by Patient Name..."
+                            style={{ width: '220px', padding: '0.4rem 0.6rem', fontSize: '0.85rem' }}
+                            value={filterPatientName}
+                            onChange={(e) => {
+                                const val = e.target.value;
+                                setFilterPatientName(val);
+                                fetchInvoices(filterDate, val);
+                            }}
+                        />
+                        {(filterDate || filterPatientName) && (
+                            <button
+                                className="btn btn-secondary btn-sm"
+                                onClick={() => {
+                                    setFilterDate('');
+                                    setFilterPatientName('');
+                                    fetchInvoices('', '');
+                                }}
+                            >
+                                Reset
+                            </button>
+                        )}
+                        <button className="btn btn-secondary btn-sm" onClick={() => fetchInvoices(filterDate, filterPatientName)}>Refresh</button>
+                    </div>
                 </div>
                 <div className="table-container mt-md">
                     <table className="data-table">
@@ -451,6 +508,7 @@ const Billing = () => {
                                                         <th>Service</th>
                                                         <th>Type</th>
                                                         <th>Amount</th>
+                                                        <th style={{ textAlign: 'right' }}>Action</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -468,6 +526,27 @@ const Billing = () => {
                                                                 <td>{item.description}</td>
                                                                 <td><span className={`type-tag ${item.type}`}>{item.type.toUpperCase()}</span></td>
                                                                 <td>{formatMoney(item.amount)}</td>
+                                                                <td style={{ textAlign: 'right' }}>
+                                                                    <button
+                                                                        type="button"
+                                                                        className="btn btn-secondary btn-sm"
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            handleMarkOutside(item);
+                                                                        }}
+                                                                        style={{
+                                                                            padding: '4px 10px',
+                                                                            fontSize: '0.75rem',
+                                                                            color: '#D97706',
+                                                                            borderColor: '#F59E0B',
+                                                                            background: '#FEF3C7',
+                                                                            fontWeight: 700
+                                                                        }}
+                                                                        title="Mark service/order as Outside clinic"
+                                                                    >
+                                                                        Outside
+                                                                    </button>
+                                                                </td>
                                                             </tr>
                                                         );
                                                     })}
